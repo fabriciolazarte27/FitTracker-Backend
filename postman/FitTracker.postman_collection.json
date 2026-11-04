@@ -1,0 +1,1014 @@
+{
+  "info": {
+    "name": "Fit Tracker API",
+    "description": "Documentación y pruebas de los endpoints del backend de Fit Tracker (NestJS). La variable `baseUrl` toma el valor de API_BASE_URL del archivo .env (por defecto http://localhost:4000). Cada petición incluye un test que verifica el código de estado.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "App",
+      "description": "Verificación de que la API está en ejecución.",
+      "item": [
+        {
+          "name": "Estado de la API",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            },
+            "description": "Devuelve un mensaje si el servidor responde."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "Gestión de usuarios de Fit Tracker.",
+      "item": [
+        {
+          "name": "Crear usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Postman\",\n  \"email\": \"postman@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "POST /users: crea un usuario."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "GET /users: devuelve todos los registros."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener usuario por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "GET /users/:id: devuelve un registro. Usa la variable id."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Postman Editado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "PATCH /users/:id: modifica parcialmente un registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "DELETE /users/:id: elimina un registro."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "description": "Autenticación. En esta etapa conserva el CRUD generado por Nest CLI; luego se agregarán login, registro y perfil.",
+      "item": [
+        {
+          "name": "Crear sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "POST /auth: crea un sesión."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "GET /auth: devuelve todos los registros."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener sesión por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "{{id}}"
+              ]
+            },
+            "description": "GET /auth/:id: devuelve un registro. Usa la variable id."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"NuevaClave123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "{{id}}"
+              ]
+            },
+            "description": "PATCH /auth/:id: modifica parcialmente un registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "{{id}}"
+              ]
+            },
+            "description": "DELETE /auth/:id: elimina un registro."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ejercicios",
+      "description": "Catálogo de ejercicios agrupados por grupo muscular.",
+      "item": [
+        {
+          "name": "Crear ejercicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"fondos\",\n  \"nombre\": \"Fondos en paralelas\",\n  \"grupoMuscularId\": 7,\n  \"equipo\": \"Paralelas\",\n  \"descripcion\": \"Empuje del cuerpo entre dos barras.\",\n  \"imagen\": \"/img/mascota-fondos.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ejercicios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ejercicios"
+              ]
+            },
+            "description": "POST /ejercicios: crea un ejercicio."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar ejercicios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ejercicios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ejercicios"
+              ]
+            },
+            "description": "GET /ejercicios: devuelve todos los registros."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener ejercicio por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ejercicios/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ejercicios",
+                "{{id}}"
+              ]
+            },
+            "description": "GET /ejercicios/:id: devuelve un registro. Usa la variable id."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar ejercicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipo\": \"Peso corporal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ejercicios/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ejercicios",
+                "{{id}}"
+              ]
+            },
+            "description": "PATCH /ejercicios/:id: modifica parcialmente un registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar ejercicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ejercicios/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ejercicios",
+                "{{id}}"
+              ]
+            },
+            "description": "DELETE /ejercicios/:id: elimina un registro."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rutinas",
+      "description": "Plantillas de ejemplo y rutinas propias de cada usuario con sus ejercicios.",
+      "item": [
+        {
+          "name": "Crear rutina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": 1,\n  \"nombre\": \"Rutina desde Postman\",\n  \"descripcion\": \"Creada para probar el endpoint.\",\n  \"ejercicios\": [\n    {\n      \"ejercicioId\": 1,\n      \"series\": 4,\n      \"cantidad\": 10,\n      \"unidad\": \"repeticiones\"\n    },\n    {\n      \"ejercicioId\": 10,\n      \"series\": 3,\n      \"cantidad\": 45,\n      \"unidad\": \"segundos\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rutinas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas"
+              ]
+            },
+            "description": "POST /rutinas: crea un rutina."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar rutinas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutinas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas"
+              ]
+            },
+            "description": "GET /rutinas: devuelve todos los registros."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener rutina por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutinas/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas",
+                "{{id}}"
+              ]
+            },
+            "description": "GET /rutinas/:id: devuelve un registro. Usa la variable id."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar rutina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Descripción actualizada.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rutinas/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas",
+                "{{id}}"
+              ]
+            },
+            "description": "PATCH /rutinas/:id: modifica parcialmente un registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar rutina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutinas/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas",
+                "{{id}}"
+              ]
+            },
+            "description": "DELETE /rutinas/:id: elimina un registro."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Calendario",
+      "description": "Agenda de entrenamientos: una rutina por usuario y por día.",
+      "item": [
+        {
+          "name": "Crear entrenamiento agendado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/calendario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "calendario"
+              ]
+            },
+            "description": "POST /calendario: crea un entrenamiento agendado."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar calendario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/calendario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "calendario"
+              ]
+            },
+            "description": "GET /calendario: devuelve todos los registros."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener entrenamiento agendado por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/calendario/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "calendario",
+                "{{id}}"
+              ]
+            },
+            "description": "GET /calendario/:id: devuelve un registro. Usa la variable id."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar entrenamiento agendado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rutinaId\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/calendario/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "calendario",
+                "{{id}}"
+              ]
+            },
+            "description": "PATCH /calendario/:id: modifica parcialmente un registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar entrenamiento agendado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/calendario/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "calendario",
+                "{{id}}"
+              ]
+            },
+            "description": "DELETE /calendario/:id: elimina un registro."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
