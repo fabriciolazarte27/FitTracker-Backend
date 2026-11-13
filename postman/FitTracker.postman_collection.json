@@ -847,7 +847,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\"\n}",
+              "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\",\n  \"completado\": false\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1007,6 +1007,159 @@
             "description": "DELETE /calendario/:id: elimina un registro."
           },
           "response": []
+        },
+        {
+          "name": "Validaciones",
+          "description": "Solicitudes con datos incorrectos para probar las validaciones de la DTO (TP 10). Todas deben responder 400.",
+          "item": [
+            {
+              "name": "Falta un campo obligatorio",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"La fecha debe tener el formato AAAA-MM-DD\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario sin `fecha`: debe responder 400."
+              },
+              "response": []
+            },
+            {
+              "name": "Texto en lugar de número",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"El usuarioId debe ser un número entero\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": \"uno\",\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario con `usuarioId` como texto: debe responder 400."
+              },
+              "response": []
+            },
+            {
+              "name": "Estado distinto de true o false",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"El campo completado debe ser true o false\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\",\n  \"completado\": \"si\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario con `completado` distinto de true o false: debe responder 400."
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }
