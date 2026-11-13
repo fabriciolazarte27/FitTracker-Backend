@@ -14,8 +14,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
-      // Devuelve solo los mensajes definidos en las DTOs, sin el prefijo
-      // "ejercicios.0." que Nest agrega en las validaciones anidadas.
       exceptionFactory: (errors) => new BadRequestException(obtenerMensajes(errors)),
     }),
   );
