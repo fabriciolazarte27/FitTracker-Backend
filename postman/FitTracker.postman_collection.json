@@ -623,6 +623,159 @@
             "description": "DELETE /ejercicios/:id: elimina un registro."
           },
           "response": []
+        },
+        {
+            "name": "Validaciones",
+            "description": "Solicitudes con datos incorrectos para probar las validaciones de la DTO (TP 10). Todas deben responder 400.",
+            "item": [
+              {
+                "name": "Falta un campo obligatorio",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El nombre no puede estar vacío\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"fondos\",\n  \"grupoMuscularId\": 7,\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios sin `nombre`: debe responder 400."
+                },
+                "response": []
+              },
+              {
+                "name": "Texto en lugar de número",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El grupoMuscularId debe ser un número entero\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"fondos\",\n  \"nombre\": \"Fondos en paralelas\",\n  \"grupoMuscularId\": \"siete\",\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios con `grupoMuscularId` como texto: debe responder 400."
+                },
+                "response": []
+              },
+              {
+                "name": "Slug con formato inválido",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El slug solo puede tener minúsculas, números y guiones\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"Fondos Paralelas\",\n  \"nombre\": \"Fondos en paralelas\",\n  \"grupoMuscularId\": 7,\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios con un `slug` con mayúsculas y espacios: debe responder 400."
+                },
+                "response": []
+              }
+            ]
         }
       ]
     },
@@ -815,7 +968,160 @@
             "description": "DELETE /rutinas/:id: elimina un registro."
           },
           "response": []
+        }, 
+        {
+  "name": "Validaciones",
+  "description": "Solicitudes con datos incorrectos para probar las validaciones de la DTO (TP 10). Todas deben responder 400.",
+  "item": [
+    {
+      "name": "Falta un campo obligatorio",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde con estado 400', () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+              "});",
+              "",
+              "pm.test('Devuelve el mensaje de validación esperado', () => {",
+              "  pm.expect(pm.response.json().message).to.include(\"El nombre no puede estar vacío\");",
+              "});"
+            ]
+          }
         }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuarioId\": 1,\n  \"ejercicios\": [\n    {\n      \"ejercicioId\": 1,\n      \"series\": 4,\n      \"cantidad\": 10,\n      \"unidad\": \"repeticiones\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/rutinas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "rutinas"
+          ]
+        },
+        "description": "POST /rutinas sin `nombre`: debe responder 400."
+      },
+      "response": []
+    },
+    {
+      "name": "Texto en lugar de número",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde con estado 400', () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+              "});",
+              "",
+              "pm.test('Devuelve el mensaje de validación esperado', () => {",
+              "  pm.expect(pm.response.json().message).to.include(\"Las series deben ser un número entero\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuarioId\": 1,\n  \"nombre\": \"Rutina desde Postman\",\n  \"ejercicios\": [\n    {\n      \"ejercicioId\": 1,\n      \"series\": \"cuatro\",\n      \"cantidad\": 10,\n      \"unidad\": \"repeticiones\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/rutinas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "rutinas"
+          ]
+        },
+        "description": "POST /rutinas con `series` como texto dentro de un ejercicio: debe responder 400."
+      },
+      "response": []
+    },
+    {
+      "name": "Unidad inválida",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde con estado 400', () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+              "});",
+              "",
+              "pm.test('Devuelve el mensaje de validación esperado', () => {",
+              "  pm.expect(pm.response.json().message).to.include(\"La unidad debe ser \\\"repeticiones\\\" o \\\"segundos\\\"\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuarioId\": 1,\n  \"nombre\": \"Rutina desde Postman\",\n  \"ejercicios\": [\n    {\n      \"ejercicioId\": 1,\n      \"series\": 4,\n      \"cantidad\": 10,\n      \"unidad\": \"kilos\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/rutinas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "rutinas"
+          ]
+        },
+        "description": "POST /rutinas con una `unidad` distinta de repeticiones o segundos: debe responder 400."
+      },
+      "response": []
+    }
+  ]
+}
       ]
     },
     {
@@ -847,7 +1153,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\"\n}",
+              "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\",\n  \"completado\": false\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1007,6 +1313,159 @@
             "description": "DELETE /calendario/:id: elimina un registro."
           },
           "response": []
+        },
+        {
+          "name": "Validaciones",
+          "description": "Solicitudes con datos incorrectos para probar las validaciones de la DTO (TP 10). Todas deben responder 400.",
+          "item": [
+            {
+              "name": "Falta un campo obligatorio",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"La fecha debe tener el formato AAAA-MM-DD\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario sin `fecha`: debe responder 400."
+              },
+              "response": []
+            },
+            {
+              "name": "Texto en lugar de número",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"El usuarioId debe ser un número entero\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": \"uno\",\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario con `usuarioId` como texto: debe responder 400."
+              },
+              "response": []
+            },
+            {
+              "name": "Estado distinto de true o false",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"El campo completado debe ser true o false\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"usuarioId\": 1,\n  \"rutinaId\": 2,\n  \"fecha\": \"2026-11-10\",\n  \"completado\": \"si\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/calendario",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "calendario"
+                  ]
+                },
+                "description": "POST /calendario con `completado` distinto de true o false: debe responder 400."
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }
