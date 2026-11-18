@@ -623,6 +623,159 @@
             "description": "DELETE /ejercicios/:id: elimina un registro."
           },
           "response": []
+        },
+        {
+            "name": "Validaciones",
+            "description": "Solicitudes con datos incorrectos para probar las validaciones de la DTO (TP 10). Todas deben responder 400.",
+            "item": [
+              {
+                "name": "Falta un campo obligatorio",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El nombre no puede estar vacío\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"fondos\",\n  \"grupoMuscularId\": 7,\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios sin `nombre`: debe responder 400."
+                },
+                "response": []
+              },
+              {
+                "name": "Texto en lugar de número",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El grupoMuscularId debe ser un número entero\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"fondos\",\n  \"nombre\": \"Fondos en paralelas\",\n  \"grupoMuscularId\": \"siete\",\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios con `grupoMuscularId` como texto: debe responder 400."
+                },
+                "response": []
+              },
+              {
+                "name": "Slug con formato inválido",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Responde con estado 400', () => {",
+                        "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                        "});",
+                        "",
+                        "pm.test('Devuelve el mensaje de validación esperado', () => {",
+                        "  pm.expect(pm.response.json().message).to.include(\"El slug solo puede tener minúsculas, números y guiones\");",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"slug\": \"Fondos Paralelas\",\n  \"nombre\": \"Fondos en paralelas\",\n  \"grupoMuscularId\": 7,\n  \"equipo\": \"Paralelas\"\n}",
+                    "options": {
+                      "raw": {
+                        "language": "json"
+                      }
+                    }
+                  },
+                  "url": {
+                    "raw": "{{baseUrl}}/ejercicios",
+                    "host": [
+                      "{{baseUrl}}"
+                    ],
+                    "path": [
+                      "ejercicios"
+                    ]
+                  },
+                  "description": "POST /ejercicios con un `slug` con mayúsculas y espacios: debe responder 400."
+                },
+                "response": []
+              }
+            ]
         }
       ]
     },
