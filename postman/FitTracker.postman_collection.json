@@ -448,7 +448,7 @@
                 "exec": [
                   "pm.test('Responde con estado 201', () => {",
                   "  pm.expect(pm.response.code).to.be.oneOf([201]);",
-                  "});"
+                  "});","", "if (pm.response.code === 201) {","  pm.collectionVariables.set('ejercicioId', pm.response.json().id);","}"
                 ]
               }
             }
@@ -611,13 +611,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/ejercicios/{{id}}",
+              "raw": "{{baseUrl}}/ejercicios/{{ejercicioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "ejercicios",
-                "{{id}}"
+                "{{ejercicioId}}"
               ]
             },
             "description": "DELETE /ejercicios/:id: elimina un registro."

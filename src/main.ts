@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './modules/app/app.module.js';
+import { PrismaExceptionFilter } from './modules/prisma/prisma-exception.filter.js';
 
 function obtenerMensajes(errors: ValidationError[]): string[] {
   return errors.flatMap((error) => [
@@ -17,6 +18,7 @@ async function bootstrap() {
       exceptionFactory: (errors) => new BadRequestException(obtenerMensajes(errors)),
     }),
   );
+  app.useGlobalFilters(new PrismaExceptionFilter());
   const config = app.get(ConfigService);
   const port = config.get<number>('PORT') ?? 4000;
   await app.listen(port);
