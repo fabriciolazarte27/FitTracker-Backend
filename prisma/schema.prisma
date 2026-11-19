@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id           Int          @id @default(autoincrement())
+  nombre       String       @db.VarChar(60)
+  email        String       @unique @db.VarChar(120)
+  passwordHash String       @map("password_hash") @db.VarChar(255)
+  creadoEn     DateTime     @default(now()) @map("creado_en") @db.Timestamp(6)
+  rutinas      Rutina[]
+  calendario   Calendario[]
+
+  @@map("usuarios")
+}
+
+model GrupoMuscular {
+  id         Int         @id @default(autoincrement())
+  nombre     String      @unique @db.VarChar(40)
+  ejercicios Ejercicio[]
+
+  @@map("grupos_musculares")
+}
+
+model Ejercicio {
+  id              Int               @id @default(autoincrement())
+  slug            String            @unique @db.VarChar(60)
+  nombre          String            @db.VarChar(80)
+  grupoMuscularId Int               @map("grupo_muscular_id")
+  equipo          String            @db.VarChar(40)
+  descripcion     String?           @db.VarChar(300)
+  imagen          String?           @db.VarChar(200)
+  grupoMuscular   GrupoMuscular     @relation(fields: [grupoMuscularId], references: [id], onDelete: Restrict)
+  rutinas         RutinaEjercicio[]
+
+  @@index([grupoMuscularId], map: "idx_ejercicios_grupo")
+  @@map("ejercicios")
+}
+
+model Rutina {
+  id          Int               @id @default(autoincrement())
+  usuarioId   Int?              @map("usuario_id")
+  nombre      String            @db.VarChar(80)
+  descripcion String?           @db.VarChar(300)
+  creadoEn    DateTime          @default(now()) @map("creado_en") @db.Timestamp(6)
+  usuario     Usuario?          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  ejercicios  RutinaEjercicio[]
+  calendario  Calendario[]
+
+  @@unique([usuarioId, nombre])
+  @@index([usuarioId], map: "idx_rutinas_usuario")
+  @@map("rutinas")
+}
+
+model RutinaEjercicio {
+  rutinaId    Int       @map("rutina_id")
+  ejercicioId Int       @map("ejercicio_id")
+  series      Int       @db.SmallInt
+  cantidad    Int       @db.SmallInt
+  unidad      String    @default("repeticiones") @db.VarChar(12)
+  orden       Int       @db.SmallInt
+  rutina      Rutina    @relation(fields: [rutinaId], references: [id], onDelete: Cascade)
+  ejercicio   Ejercicio @relation(fields: [ejercicioId], references: [id], onDelete: Restrict)
+
+  @@id([rutinaId, ejercicioId])
+  @@unique([rutinaId, orden])
+  @@map("rutina_ejercicios")
+}
+
+model Calendario {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int      @map("usuario_id")
+  rutinaId   Int      @map("rutina_id")
+  fecha      DateTime @db.Date
+  completado Boolean  @default(false)
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  rutina     Rutina   @relation(fields: [rutinaId], references: [id], onDelete: Restrict)
+
+  @@unique([usuarioId, fecha])
+  @@index([rutinaId], map: "idx_calendario_rutina")
+  @@map("calendario")
+}
