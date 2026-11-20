@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto.js';
-import { UpdateAuthDto } from './dto/update-auth.dto.js';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { LoginDto } from './dto/login.dto.js';
+import { RegisterDto } from './dto/register.dto.js';
+import type { JwtPayload } from './jwt-auth.guard.js';
+
+const sinPassword = { passwordHash: true } as const;
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async register(registerDto: RegisterDto) {
+    const { password, ...datos } = registerDto;
+    const usuario = await this.prisma.usuario.create({
+      data: { ...datos, passwordHash: await bcrypt.hash(password, 10) },
+      omit: sinPassword,
+    });
+    return this.crearSesion(usuario);
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(loginDto: LoginDto) {
+    const usuario = await this.prisma.usuario.findUnique({ where: { email: loginDto.email } });
+    if (!usuario || !(await bcrypt.compare(loginDto.password, usuario.passwordHash))) {
+      throw new UnauthorizedException('Email o contraseña incorrectos');
+    }
+    const { passwordHash: _, ...datos } = usuario;
+    return this.crearSesion(datos);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async perfil(id: number) {
+    const usuario = await this.prisma.usuario.findUnique({ where: { id }, omit: sinPassword });
+    if (!usuario) throw new UnauthorizedException('El usuario de la sesión ya no existe');
+    return usuario;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  private async crearSesion(usuario: { id: number; email: string }) {
+    const payload: JwtPayload = { sub: usuario.id, email: usuario.email };
+    return { accessToken: await this.jwtService.signAsync(payload), usuario };
   }
 }
