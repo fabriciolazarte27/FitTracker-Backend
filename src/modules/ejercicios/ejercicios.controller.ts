@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { EjerciciosService } from './ejercicios.service.js';
 import { CreateEjercicioDto } from './dto/create-ejercicio.dto.js';
 import { UpdateEjercicioDto } from './dto/update-ejercicio.dto.js';
@@ -18,17 +18,17 @@ export class EjerciciosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ejerciciosService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ejerciciosService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEjercicioDto: UpdateEjercicioDto) {
-    return this.ejerciciosService.update(+id, updateEjercicioDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateEjercicioDto: UpdateEjercicioDto) {
+    return this.ejerciciosService.update(id, updateEjercicioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ejerciciosService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.ejerciciosService.remove(id);
   }
 }
