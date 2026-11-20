@@ -4,7 +4,7 @@
     "description": "Documentación y pruebas de los endpoints del backend de Fit Tracker (NestJS). La variable `baseUrl` toma el valor de API_BASE_URL del archivo .env (por defecto http://localhost:4000). Cada petición incluye un test que verifica el código de estado.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
+    "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:4000"
@@ -12,6 +12,18 @@
     {
       "key": "id",
       "value": "1"
+    },
+    {
+      "key": "ejercicioId",
+      "value": ""
+    },
+    {
+      "key": "rutinaId",
+      "value": ""
+    },
+    {
+      "key": "calendarioId",
+      "value": ""
     }
   ],
   "item": [
@@ -793,7 +805,11 @@
                 "exec": [
                   "pm.test('Responde con estado 201', () => {",
                   "  pm.expect(pm.response.code).to.be.oneOf([201]);",
-                  "});"
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('rutinaId', pm.response.json().id);",
+                  "}"
                 ]
               }
             }
@@ -956,14 +972,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/rutinas/{{id}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "rutinas",
-                "{{id}}"
-              ]
+            "raw": "{{baseUrl}}/rutinas/{{rutinaId}}",
+            "host": ["{{baseUrl}}"
+                    ],
+            "path": [
+              "rutinas",
+              "{{rutinaId}}"
+            ]
             },
             "description": "DELETE /rutinas/:id: elimina un registro."
           },
