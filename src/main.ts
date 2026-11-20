@@ -19,6 +19,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new PrismaExceptionFilter());
+  app.enableCors();
   const config = app.get(ConfigService);
   const port = config.get<number>('PORT') ?? 4000;
   await app.listen(port);
