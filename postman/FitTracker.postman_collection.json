@@ -4,7 +4,7 @@
     "description": "Documentación y pruebas de los endpoints del backend de Fit Tracker (NestJS). La variable `baseUrl` toma el valor de API_BASE_URL del archivo .env (por defecto http://localhost:4000). Cada petición incluye un test que verifica el código de estado.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-    "variable": [
+  "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:4000"
@@ -23,6 +23,14 @@
     },
     {
       "key": "calendarioId",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "usuarioId",
       "value": ""
     }
   ],
@@ -63,11 +71,11 @@
       ]
     },
     {
-      "name": "Users",
-      "description": "Gestión de usuarios de Fit Tracker.",
+      "name": "Auth",
+      "description": "Registro, inicio de sesión y perfil. Registrar e iniciar sesión devuelven un JWT (accessToken) que se guarda en la variable token y se usa en las rutas protegidas.",
       "item": [
         {
-          "name": "Crear usuario",
+          "name": "Registrar usuario",
           "event": [
             {
               "listen": "test",
@@ -76,7 +84,11 @@
                 "exec": [
                   "pm.test('Responde con estado 201', () => {",
                   "  pm.expect(pm.response.code).to.be.oneOf([201]);",
-                  "});"
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('usuarioId', pm.response.json().usuario.id);",
+                  "}"
                 ]
               }
             }
@@ -91,7 +103,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Usuario Postman\",\n  \"email\": \"postman@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
+              "raw": "{\n  \"nombre\": \"Usuario Postman\",\n  \"email\": \"postman{{$timestamp}}@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -99,18 +111,312 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/users",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "users"
+                "auth",
+                "register"
               ]
             },
-            "description": "POST /users: crea un usuario."
+            "description": "POST /auth/register: crea un usuario con la contraseña hasheada con bcrypt y devuelve el token y el usuario. El email usa {{$timestamp}} para que sea distinto en cada corrida."
           },
           "response": []
         },
+        {
+          "name": "Iniciar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "POST /auth/login: verifica el email y la contraseña y devuelve el token (JWT) y el usuario. Guarda el token en la variable token."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener perfil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde con estado 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "perfil"
+              ]
+            },
+            "description": "GET /auth/perfil: devuelve el usuario dueño del token. Requiere el header Authorization: Bearer {{token}}.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validaciones",
+          "description": "Solicitudes inválidas: deben responder 400, 401 o 409.",
+          "item": [
+            {
+              "name": "Contraseña incorrecta",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 401', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([401]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"Email o contraseña incorrectos\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"demo@fittracker.test\",\n  \"password\": \"Incorrecta1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "POST /auth/login con una contraseña incorrecta: debe responder 401."
+              },
+              "response": []
+            },
+            {
+              "name": "Email ya registrado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 409', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([409]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"Ya existe un registro con esos datos\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Usuario Demo\",\n  \"email\": \"demo@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "POST /auth/register con un email que ya existe: debe responder 409."
+              },
+              "response": []
+            },
+            {
+              "name": "Contraseña demasiado corta",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 400', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([400]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"La contraseña debe tener al menos 8 caracteres\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Usuario Postman\",\n  \"email\": \"corta@fittracker.test\",\n  \"password\": \"123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "POST /auth/register con una contraseña de menos de 8 caracteres: debe responder 400."
+              },
+              "response": []
+            },
+            {
+              "name": "Perfil sin token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 401', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([401]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"Falta el token de acceso\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/perfil",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "perfil"
+                  ]
+                },
+                "description": "GET /auth/perfil sin el header Authorization: debe responder 401."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "Gestión de usuarios. Todas las rutas requieren el token de Iniciar sesión. Los usuarios se crean con Auth → Registrar usuario.",
+      "item": [
         {
           "name": "Listar users",
           "event": [
@@ -207,16 +513,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/users/{{id}}",
+              "raw": "{{baseUrl}}/users/{{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "{{id}}"
+                "{{usuarioId}}"
               ]
             },
-            "description": "PATCH /users/:id: modifica parcialmente un registro."
+            "description": "PATCH /users/:id: modifica parcialmente un registro. Usa el usuario creado con Auth → Registrar usuario."
           },
           "response": []
         },
@@ -239,212 +545,74 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/users/{{id}}",
+              "raw": "{{baseUrl}}/users/{{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "{{id}}"
+                "{{usuarioId}}"
               ]
             },
-            "description": "DELETE /users/:id: elimina un registro."
+            "description": "DELETE /users/:id: elimina un registro. Usa el usuario creado con Auth → Registrar usuario."
           },
           "response": []
-        }
-      ]
-    },
-    {
-      "name": "Auth",
-      "description": "Autenticación. En esta etapa conserva el CRUD generado por Nest CLI; luego se agregarán login, registro y perfil.",
-      "item": [
+        },
         {
-          "name": "Crear sesión",
-          "event": [
+          "name": "Validaciones",
+          "description": "Solicitudes sin token: deben responder 401.",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Responde con estado 201', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"demo@fittracker.test\",\n  \"password\": \"Fit12345\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "name": "Listar sin token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Responde con estado 401', () => {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([401]);",
+                      "});",
+                      "",
+                      "pm.test('Devuelve el mensaje esperado', () => {",
+                      "  pm.expect(pm.response.json().message).to.include(\"Falta el token de acceso\");",
+                      "});"
+                    ]
+                  }
                 }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth",
-              "host": [
-                "{{baseUrl}}"
               ],
-              "path": [
-                "auth"
-              ]
-            },
-            "description": "POST /auth: crea un sesión."
-          },
-          "response": []
-        },
-        {
-          "name": "Listar auth",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Responde con estado 200', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
-                  "});"
-                ]
-              }
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                },
+                "description": "GET /users sin el header Authorization: debe responder 401."
+              },
+              "response": []
             }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth"
-              ]
-            },
-            "description": "GET /auth: devuelve todos los registros."
-          },
-          "response": []
-        },
-        {
-          "name": "Obtener sesión por id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Responde con estado 200', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/{{id}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "{{id}}"
-              ]
-            },
-            "description": "GET /auth/:id: devuelve un registro. Usa la variable id."
-          },
-          "response": []
-        },
-        {
-          "name": "Actualizar sesión",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Responde con estado 200', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"NuevaClave123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/{{id}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "{{id}}"
-              ]
-            },
-            "description": "PATCH /auth/:id: modifica parcialmente un registro."
-          },
-          "response": []
-        },
-        {
-          "name": "Eliminar sesión",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Responde con estado 200', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/{{id}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "{{id}}"
-              ]
-            },
-            "description": "DELETE /auth/:id: elimina un registro."
-          },
-          "response": []
+          ]
         }
-      ]
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
     },
     {
       "name": "Ejercicios",
@@ -460,7 +628,11 @@
                 "exec": [
                   "pm.test('Responde con estado 201', () => {",
                   "  pm.expect(pm.response.code).to.be.oneOf([201]);",
-                  "});","", "if (pm.response.code === 201) {","  pm.collectionVariables.set('ejercicioId', pm.response.json().id);","}"
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('ejercicioId', pm.response.json().id);",
+                  "}"
                 ]
               }
             }
@@ -972,13 +1144,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-            "raw": "{{baseUrl}}/rutinas/{{rutinaId}}",
-            "host": ["{{baseUrl}}"
-                    ],
-            "path": [
-              "rutinas",
-              "{{rutinaId}}"
-            ]
+              "raw": "{{baseUrl}}/rutinas/{{rutinaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutinas",
+                "{{rutinaId}}"
+              ]
             },
             "description": "DELETE /rutinas/:id: elimina un registro."
           },
