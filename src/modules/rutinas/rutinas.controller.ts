@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { RutinasService } from './rutinas.service.js';
 import { CreateRutinaDto } from './dto/create-rutina.dto.js';
 import { UpdateRutinaDto } from './dto/update-rutina.dto.js';
@@ -18,17 +18,17 @@ export class RutinasController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rutinasService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.rutinasService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRutinaDto: UpdateRutinaDto) {
-    return this.rutinasService.update(+id, updateRutinaDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateRutinaDto: UpdateRutinaDto) {
+    return this.rutinasService.update(id, updateRutinaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rutinasService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.rutinasService.remove(id);
   }
 }

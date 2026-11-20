@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateEjercicioDto } from './dto/create-ejercicio.dto.js';
 import { UpdateEjercicioDto } from './dto/update-ejercicio.dto.js';
 
 @Injectable()
 export class EjerciciosService {
+  constructor(private readonly prisma: PrismaService) {}
+
   create(createEjercicioDto: CreateEjercicioDto) {
-    return 'This action adds a new ejercicio';
+    return this.prisma.ejercicio.create({
+      data: createEjercicioDto,
+      include: { grupoMuscular: true },
+    });
   }
 
   findAll() {
-    return `This action returns all ejercicios`;
+    return this.prisma.ejercicio.findMany({
+      include: { grupoMuscular: true },
+      orderBy: { id: 'asc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ejercicio`;
+  async findOne(id: number) {
+    const ejercicio = await this.prisma.ejercicio.findUnique({
+      where: { id },
+      include: { grupoMuscular: true },
+    });
+    if (!ejercicio) throw new NotFoundException(`No existe el ejercicio con id ${id}`);
+    return ejercicio;
   }
 
   update(id: number, updateEjercicioDto: UpdateEjercicioDto) {
-    return `This action updates a #${id} ejercicio`;
+    return this.prisma.ejercicio.update({
+      where: { id },
+      data: updateEjercicioDto,
+      include: { grupoMuscular: true },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} ejercicio`;
+    return this.prisma.ejercicio.delete({ where: { id } });
   }
 }

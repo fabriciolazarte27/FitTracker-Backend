@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { CalendarioService } from './calendario.service.js';
 import { CreateCalendarioDto } from './dto/create-calendario.dto.js';
 import { UpdateCalendarioDto } from './dto/update-calendario.dto.js';
@@ -18,17 +18,17 @@ export class CalendarioController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.calendarioService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.calendarioService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCalendarioDto: UpdateCalendarioDto) {
-    return this.calendarioService.update(+id, updateCalendarioDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCalendarioDto: UpdateCalendarioDto) {
+    return this.calendarioService.update(id, updateCalendarioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.calendarioService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.calendarioService.remove(id);
   }
 }
