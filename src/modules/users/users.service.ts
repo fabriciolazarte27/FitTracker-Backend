@@ -1,26 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
+
+const sinPassword = { passwordHash: true } as const;
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return `This action returns all users`;
+    return this.prisma.usuario.findMany({ omit: sinPassword, orderBy: { id: 'asc' } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const usuario = await this.prisma.usuario.findUnique({ where: { id }, omit: sinPassword });
+    if (!usuario) throw new NotFoundException(`No existe el usuario con id ${id}`);
+    return usuario;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const { password, ...datos } = updateUserDto;
+    return this.prisma.usuario.update({
+      where: { id },
+      data: { ...datos, ...(password && { passwordHash: await bcrypt.hash(password, 10) }) },
+      omit: sinPassword,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.prisma.usuario.delete({ where: { id }, omit: sinPassword });
   }
 }
