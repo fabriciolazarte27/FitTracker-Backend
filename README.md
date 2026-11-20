@@ -11,7 +11,11 @@
 
 API REST de Fit Tracker desarrollada con NestJS y PostgreSQL. Recibe las peticiones del [frontend](https://github.com/santiagobnj-avila-pun/FitTracker-Frontend) para gestionar usuarios, autenticación, ejercicios, rutinas y el calendario de entrenamientos.
 
-El proyecto está organizado en módulos dentro de `src/modules`: `app` es el módulo raíz y `users`, `auth`, `ejercicios`, `rutinas` y `calendario` se generaron con Nest CLI (`nest g resource`). Cada uno tiene su controlador, su servicio, sus DTO y sus entidades, y ofrece las operaciones CRUD: crear (POST), listar y obtener por id (GET), actualizar (PATCH) y eliminar (DELETE). Los servicios de `ejercicios`, `rutinas` y `calendario` trabajan con la base de datos mediante Prisma Client; `users` y `auth` se completarán en la próxima entrega.
+El proyecto está organizado en módulos dentro de `src/modules`: `app` es el módulo raíz y `users`, `auth`, `ejercicios`, `rutinas` y `calendario` se generaron con Nest CLI (`nest g resource`). Cada uno tiene su controlador, su servicio, sus DTO y sus entidades, y ofrece las operaciones CRUD: crear (POST), listar y obtener por id (GET), actualizar (PATCH) y eliminar (DELETE). Los servicios trabajan con la base de datos mediante Prisma Client.
+
+### Autenticación
+
+`auth` permite registrarse (`POST /auth/register`), iniciar sesión (`POST /auth/login`) y consultar el perfil (`GET /auth/perfil`). Registrarse e iniciar sesión devuelven un JWT en `accessToken` junto con los datos del usuario. Las contraseñas se guardan hasheadas con bcrypt y nunca se devuelven en las respuestas. Los usuarios se crean solo con el registro: `users` no tiene ruta para crearlos y permite listarlos, consultarlos, actualizarlos y eliminarlos. Las rutas de `users` y el perfil requieren el header `Authorization: Bearer <token>`; sin un token válido responden 401.
 
 El recorrido de una solicitud es: el DTO valida los datos recibidos, el controlador recibe la solicitud y llama al servicio, el servicio usa Prisma Client para consultar o modificar la base y la API devuelve el resultado. Si el registro no existe responde 404, si está duplicado o lo usa otro registro responde 409 y si los datos no son válidos responde 400.
 
@@ -23,7 +27,7 @@ Las tablas se definen en `prisma/schema.prisma` y se crean con las migraciones d
 
 ### Postman
 
-La colección `postman/FitTracker.postman_collection.json` documenta los endpoints de cada módulo con cuerpos JSON de ejemplo y un test que verifica el código de estado. Se importa en Postman (Import → archivo) y se pueden ejecutar todas las pruebas con Run collection. La variable `baseUrl` indica la dirección de la API.
+La colección `postman/FitTracker.postman_collection.json` documenta los endpoints de cada módulo con cuerpos JSON de ejemplo y un test que verifica el código de estado. Se importa en Postman (Import → archivo) y se pueden ejecutar todas las pruebas con Run collection. La variable `baseUrl` indica la dirección de la API. La carpeta Auth se ejecuta antes que Users: Iniciar sesión guarda el token en la variable `token`, que usan las rutas protegidas.
 
 ## Tecnologías utilizadas
 
@@ -31,6 +35,7 @@ La colección `postman/FitTracker.postman_collection.json` documenta los endpoin
 - `@nestjs/config` para las variables de entorno.
 - PostgreSQL 18 y pgAdmin.
 - Prisma 7 (Prisma CLI, Prisma Client y el adaptador `@prisma/adapter-pg`) para acceder a la base.
+- `@nestjs/jwt` para generar y verificar los JWT, y bcrypt para hashear las contraseñas.
 - Postman para documentar y probar la API.
 - Git y GitHub para el control de versiones.
 
@@ -44,12 +49,19 @@ Desde la carpeta del proyecto:
 npm install
 ```
 
-Crear un archivo `.env` en la raíz del proyecto, junto a `package.json`, copiando `.env.example` y completando la contraseña del usuario `postgres`:
+Crear un archivo `.env` en la raíz del proyecto, junto a `package.json`, copiando `.env.example` y completando la contraseña del usuario `postgres` y un secreto propio para firmar los JWT:
 
 ```env
 PORT=4000
 DATABASE_URL="postgresql://postgres:TU_PASSWORD@localhost:5432/fittracker?schema=public"
 API_BASE_URL=http://localhost:4000/
+JWT_SECRET=CAMBIAR_POR_UN_SECRETO_LARGO
+```
+
+Para generar un secreto aleatorio:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 `.env` está ignorado por Git y no se sube al repositorio. Cada integrante debe crearlo localmente.
@@ -76,6 +88,8 @@ psql -U postgres -d fittracker -f database/04-verificacion.sql
 
 `npx prisma studio` abre en el navegador una vista de las tablas para revisar los datos.
 
+Los usuarios de ejemplo (por ejemplo `demo@fittracker.test`) tienen la contraseña `Fit12345` para probar el inicio de sesión.
+
 Iniciar la API:
 
 ```bash
@@ -93,8 +107,8 @@ src/
   modules/
     app/               Módulo raíz: ConfigModule y los demás módulos
     prisma/            PrismaService y filtro de errores de la base
-    users/             Usuarios
-    auth/              Autenticación
+    users/             Usuarios (rutas protegidas con JWT)
+    auth/              Registro, inicio de sesión, perfil y JwtAuthGuard
     ejercicios/        Ejercicios y grupos musculares
     rutinas/           Rutinas y sus ejercicios
     calendario/        Entrenamientos agendados
