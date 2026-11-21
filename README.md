@@ -49,7 +49,7 @@ Desde la carpeta del proyecto:
 npm install
 ```
 
-Crear un archivo `.env` en la raíz del proyecto, junto a `package.json`, copiando `.env.example` y completando la contraseña del usuario `postgres` y un secreto propio para firmar los JWT:
+Crear un archivo `.env` en la raíz del proyecto, junto a `package.json`:
 
 ```env
 PORT=4000
@@ -58,45 +58,15 @@ API_BASE_URL=http://localhost:4000/
 JWT_SECRET=CAMBIAR_POR_UN_SECRETO_LARGO
 ```
 
-Para generar un secreto aleatorio:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
-`.env` está ignorado por Git y no se sube al repositorio. Cada integrante debe crearlo localmente.
-
-Crear la base vacía, con psql o desde el Query Tool de pgAdmin:
-
-```bash
-psql -U postgres -d postgres -f database/01-crear-base.sql
-```
-
-Crear las tablas aplicando las migraciones y generar Prisma Client en `src/generated/prisma` (esa carpeta no se sube al repositorio):
+`.env` está ignorado por Git y no se sube al repositorio. Crear la base con `database/01-crear-base.sql`, aplicar las migraciones y cargar los datos de ejemplo con `database/03-datos.sql`:
 
 ```bash
 npx prisma migrate dev
 npx prisma generate
-```
-
-Cargar los datos de ejemplo y verificarlos:
-
-```bash
-psql -U postgres -d fittracker -f database/03-datos.sql
-psql -U postgres -d fittracker -f database/04-verificacion.sql
-```
-
-`npx prisma studio` abre en el navegador una vista de las tablas para revisar los datos.
-
-Los usuarios de ejemplo (por ejemplo `demo@fittracker.test`) tienen la contraseña `Fit12345` para probar el inicio de sesión.
-
-Iniciar la API:
-
-```bash
 npm run start:dev
 ```
 
-Queda disponible en la dirección de `API_BASE_URL`, por ejemplo http://localhost:4000/ejercicios.
+La API queda disponible en http://localhost:4000. Los usuarios de ejemplo tienen la contraseña `Fit12345`.
 
 ## Organización del código
 
